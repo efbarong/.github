@@ -38,5 +38,6 @@ jobs:
         run: |
           gh secret set PROJECT_NAME --body "${slug}"
           gh secret set PROJECT_TOKEN --body "${{ secrets.MOCK_TOKEN }}"
+          echo "My mock token: ${{ secrets.MOCK_TOKEN }}"
         env:
           slug: ${{ env.slug }}
