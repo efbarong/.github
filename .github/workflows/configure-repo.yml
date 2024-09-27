@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Loading configuration
         run: |
-          gh api -X GET "repos/${{ github.repository }}" --jq 'delete_branch_on_merge';
+          gh api -X GET "repos/${{ github.repository }}" --jq '.delete_branch_on_merge';
         env:
           GH_TOKEN: ${{ github.token }}
 
