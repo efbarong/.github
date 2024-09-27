@@ -3,6 +3,10 @@ name: Configure Repository
 on:
   workflow_call:
 
+permissions:
+  contents: write
+  actions: write
+
 jobs:
   configure:
     runs-on: ubuntu-latest
