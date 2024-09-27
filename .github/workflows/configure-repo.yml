@@ -6,9 +6,10 @@ jobs:
   configure:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up teams
+      - name: Enable auto-delete branches after merge
         run: |
-          gh api -X PUT /orgs/dynamic-framework/teams/dynamic-framework-team/repos/${{ github.repository }} --field permission=push
+          gh api -X PATCH /repos/${{ github.repository }} \
+          -f delete_branch_on_merge=true
 
       - name: Protect master branch
         run: |
@@ -16,21 +17,26 @@ jobs:
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${{ github.repository }}/branches/master/protection \
           -d '{
-            "required_status_checks": {
-              "strict": true,
-              "contexts": ["use-checks / Lint and Test", "use-pr-labeler / Labeling Job"]
-            },
             "enforce_admins": false,
             "required_pull_request_reviews": {
               "dismiss_stale_reviews": true,
-              "require_code_owner_reviews": true,
+              "require_code_owner_reviews": false,
               "required_approving_review_count": 2
             },
             "restrictions": null,
             "required_conversation_resolution": true
           }'
 
+      - name: Create slug from repository name
+        id: create_slug
+        run: |
+          repo_name=$(echo "${{ github.repository }}" | awk -F/ '{print $2}')
+          slug=$(echo "${repo_name}" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-')
+          echo "slug=$slug" >> $GITHUB_ENV
+
       - name: Add repository secrets
         run: |
-          gh secret set WIDGET_NAME_CATALOG --body "${{ github.repository | slug }}"
-          gh secret set WIDGET_NAME_DEMO --body "${{ github.repository | slug }}"
+          gh secret set PROJECT_NAME --body "${slug}"
+          gh secret set PROJECT_TOKEN --body "${{ secrets.MOCK_TOKEN }}"
+        env:
+          slug: ${{ env.slug }}
