@@ -11,6 +11,10 @@ jobs:
   configure:
     runs-on: ubuntu-latest
     steps:
+      - name: Loading configuration
+        run: |
+          echo "Loading configuration"
+
       - name: Enable auto-delete branches after merge
         run: |
           gh api -X PATCH /repos/${{ github.repository }} \
