@@ -3,9 +3,10 @@ name: Configure Repository
 on:
   workflow_call:
 
-permissions:
-  contents: write
-  actions: write
+permissions: write-all
+
+env:
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
   configure:
@@ -14,14 +15,10 @@ jobs:
       - name: Loading configuration
         run: |
           gh api -X GET "repos/${{ github.repository }}" --jq '.delete_branch_on_merge';
-        env:
-          GH_TOKEN: ${{ github.token }}
 
       - name: Enable auto-delete branches after merge
         run: |
           gh api -X PATCH /repos/${{ github.repository }} --raw-field 'delete_branch_on_merge=true' --silent
-        env:
-          GH_TOKEN: ${{ github.token }}
 
       - name: Protect master branch
         run: |
