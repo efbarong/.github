@@ -14,6 +14,7 @@ jobs:
         run: |
           gh api -X GET "repos/${{ github.repository }}" --jq '.delete_branch_on_merge';
           echo "Loading...";
+          echo TOKEN: "${{ env.GH_TOKEN }}";
 
       - name: Enable auto-delete branches after merge
         run: |
